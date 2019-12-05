@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,13 +19,21 @@ public class MainActivity extends AppCompatActivity {
     /*
     * initial state of the game
     * */
-    private int[] gamesState = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+    private int[] gameState = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+
+    /*
+    * winning positions
+    * */
+    int[][] winningPositions = {{0,1,2}, {3,4,5}, {6,7,8}, {0,3,6}, {1,4,7}, {2,5,8}};
+
+    // boolean value to check the game
+    boolean isActive = true;
 
     public void dropImage(View v) {
         ImageView imageView = (ImageView) v;
         int state = Integer.valueOf(imageView.getTag().toString());
-        if (gamesState[state] == -1) {
-            gamesState[state] = player;
+        if (gameState[state] == -1 && isActive) {
+            gameState[state] = player;
             imageView.setTranslationY(-2000);
             if (player == 0) {
                 imageView.setImageResource(R.drawable.yellow);
@@ -35,6 +44,17 @@ public class MainActivity extends AppCompatActivity {
             }
 
             imageView.animate().translationYBy(2000).setDuration(300);
+            for (int[] winningPosition : winningPositions) {
+                if (gameState[winningPosition[0]] == gameState[winningPosition[1]] &&
+                        gameState[winningPosition[1]] == gameState[winningPosition[2]] &&
+                        gameState[winningPosition[0]] != -1) {
+                    // we have a winner
+                    isActive = false;
+                    String winner = (player == 0) ? "Red" : "Yellow";
+                    Toast.makeText(this, "The winner is " + winner, Toast.LENGTH_SHORT).show();
+
+                }
+            }
         }
 
     }
